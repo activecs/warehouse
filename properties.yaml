@@ -1,0 +1,20 @@
+properties:
+  ###############################################
+  ## Global environment configuration
+  ###############################################
+  global: &global_env
+   
+   hibernate.dialect: org.hibernate.dialect.MySQL5Dialect
+   database.url: jdbc:mysql://127.0.0.1:3306/examination?autoReconnect=true&useEncoding=true&characterEncoding=UTF-8
+   database.username: root
+   database.password: root
+   hibernate.show.sql: true
+   hibernate.hbm2ddl.auto: update
+   database.driver.class: com.mysql.jdbc.Driver
+   
+  ###############################################
+  ## Local environment configuration
+  ###############################################
+  config-local: &config-local
+    <<: *global_env
+

@@ -1,0 +1,218 @@
+import com.kharkiv.board.deploy.TomcatSshDeploy;
+import com.kharkiv.board.deploy.TomcatSshRestart;
+import com.kharkiv.board.tests.NotificationTestListener;
+
+apply plugin: 'maven'
+apply plugin: 'war'
+apply plugin: 'eclipse'
+apply plugin: 'tomcat'
+apply plugin: 'wrapper'
+
+group = 'com.test'
+
+compileJava.options.encoding = 'UTF-8'
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+
+ext {
+    notFound = 'not-found';
+    systemPropertyEnvironment = 'env';
+    yamlPropertiesFile = file('properties.yaml');
+    defaultEnv = 'config-local';
+    versionFilePath = "src/main/resources/version.properties";
+	project.version = getArtifactVersion();
+}
+
+
+repositories {
+    maven { url "http://repo.maven.apache.org/maven2" }
+    maven { url 'http://repo.spring.io/milestone' }
+    mavenCentral()
+}
+
+configurations {
+    integTestCompile.extendsFrom testCompile
+    integTestRuntime.extendsFrom testRuntime
+}
+
+sourceSets {
+    main {
+        java {
+            srcDir 'src/main/java'
+        }
+        resources { srcDir 'src/main/resources' }
+    }
+    test {
+        java {
+            srcDir 'src/test/java'
+            include '**/*Test.java'
+        }
+        resources { srcDir 'src/test/resources' }
+    }
+    integrationTest{
+        java {
+            srcDir 'src/integtest/java'
+            include '**/*Test.java'
+        }
+        resources { srcDir 'src/integtest/resources' }
+        compileClasspath = sourceSets.main.output + configurations.integTestCompile
+        runtimeClasspath = output + compileClasspath + configurations.integTestRuntime
+    }
+}
+
+buildscript {
+    repositories {
+        jcenter()
+        mavenCentral()
+        maven {url 'http://dl.bintray.com/robfletcher/gradle-plugins'}
+    }
+    dependencies {
+        classpath 'org.gradle.api.plugins:gradle-tomcat-plugin:1.2.4'
+        classpath 'org.hidetake:gradle-ssh-plugin:0.3.10'
+    }
+}
+
+dependencies {
+    def springVersion = '4.1.1.RELEASE'
+    def tomcatVersion = '7.0.55'
+    def hybernateVersion = '4.3.5.Final'
+    def jacksonVersion = '2.4.0'
+    def log4j2Version = '2.0-rc1'
+
+    compile group: 'org.springframework', 				name:'spring-core', 					version:springVersion
+    compile group: 'org.springframework', 				name:'spring-context', 					version:springVersion
+    compile group: 'org.springframework', 				name:'spring-orm', 						version:springVersion
+    compile group: 'org.springframework', 				name:'spring-jdbc', 					version:springVersion
+    compile group: 'org.springframework', 				name:'spring-web', 						version:springVersion
+    compile group: 'org.springframework', 				name:'spring-webmvc', 					version:springVersion
+    compile group: 'org.springframework', 				name:'spring-websocket', 				version:springVersion
+    compile group: 'org.hibernate',						name:'hibernate-core', 					version:hybernateVersion
+    compile group: 'org.hibernate',						name:'hibernate-entitymanager',			version:hybernateVersion
+    compile group: 'org.hibernate',						name:'hibernate-validator', 			version:'5.1.2.Final'
+    compile group: 'org.apache.commons', 				name:'commons-lang3', 					version:'3.3.2'
+    compile group: 'commons-collections', 				name:'commons-collections', 			version:'3.2.1'
+    compile group: 'com.google.guava', 					name:'guava', 							version:'18.0'
+    compile group: 'com.fasterxml.jackson.core',		name:'jackson-core',					version:jacksonVersion
+    compile group: 'com.fasterxml.jackson.core',		name:'jackson-databind',				version:jacksonVersion
+    compile group: 'com.fasterxml.jackson.core',		name:'jackson-annotations',				version:jacksonVersion
+    compile group: 'org.slf4j', 						name:'slf4j-api', 						version:'1.7.5'
+    compile group: 'javax.inject', 						name:'javax.inject',					version:'1'
+    compile group: 'com.google.code.gson',				name:'gson',							version:'2.2.4'
+	compile 'com.google.apis:google-api-services-analytics:v3-rev113-1.19.1'
+
+    runtime group: 'org.apache.logging.log4j',	    	name:'log4j-slf4j-impl',		    	version:log4j2Version
+    runtime group: 'org.apache.logging.log4j',	    	name:'log4j-core',				    	version:log4j2Version
+    runtime group: 'org.apache.logging.log4j',	    	name:'log4j-jcl', 				    	version:log4j2Version
+    runtime group: 'mysql', 					    	name:'mysql-connector-java',	    	version:'5.1.30'
+
+    testCompile group: 'junit', 			    		name: 'junit', 					    	version:'4.11'
+    testCompile group: 'org.mockito', 			    	name: 'mockito-core', 			    	version: '1.9.5'
+    testCompile group: 'org.easytesting', 			    name: 'fest-assert-core', 		    	version:'2.0M10'
+    testCompile group: 'org.springframework',    		name: 'spring-test', 			    	version:springVersion
+    
+    compile         group: 'javax.servlet',             name:'jstl',                            version:'1.2'
+    providedCompile group: 'javax.servlet',      		name:'javax.servlet-api',			    version:'3.1.0'
+
+    tomcat group: 'org.apache.tomcat.embed',	    	name:'tomcat-embed-core',			    version:tomcatVersion
+    tomcat group: 'org.apache.tomcat.embed',    		name:'tomcat-embed-logging-juli',   	version:tomcatVersion
+    tomcat group: 'org.apache.tomcat.embed',	    	name:'tomcat-embed-websocket',  		version:tomcatVersion
+    tomcat("org.apache.tomcat.embed:tomcat-embed-jasper:${tomcatVersion}") {
+        exclude group: 'org.eclipse.jdt.core.compiler', module: 'ecj'
+    }
+}
+
+project.gradle.addListener(new NotificationTestListener(project));
+
+def getEnvironmentName() {
+    String env = System.getProperty(systemPropertyEnvironment, notFound);
+    if(env != notFound)
+        return env;
+    return defaultEnv;
+}
+
+def Properties getProperties(String filePath){
+	def Properties properties = new Properties()
+	def propsFile = file(filePath)
+
+	if(propsFile.exists())
+	properties.load(new FileInputStream(propsFile))
+
+	return properties
+}
+
+def String getArtifactVersion() {
+	def Properties versionProps = getProperties(versionFilePath)
+	if(hasProperty("releaseArtifact")) {
+		return versionProps['MajorVersion'] + "." + versionProps['MinorVersion']
+	} else {
+		return versionProps['MajorVersion'] + "." + versionProps['MinorVersion'] + "." + versionProps['BuildVersion'] +"-SNAPSHOT"
+	}
+}
+
+tomcat {
+    httpPort = 8095
+    httpsPort = 8096
+    stopPort = 8083
+    ajpPort = 8010
+    enableSSL = true
+}
+tomcatRun.daemon = false
+tomcatRun.contextPath = ''
+
+eclipse {
+    project {
+        natures += [
+                'org.springframework.ide.eclipse.core.springnature',
+                'org.springsource.ide.eclipse.gradle.core.nature',
+        ]
+    }
+}
+
+task generateProperties {
+    description = "Generates properties for environments"
+    inputs.files yamlPropertiesFile
+    doLast {
+        def env = getEnvironmentName();
+        def loader = new YamlLoader(env);
+        loader.process()
+    }
+}
+processResources.dependsOn generateProperties
+
+task integrationTest(type: Test) {
+    testClassesDir = sourceSets.integrationTest.output.classesDir
+    classpath = sourceSets.integrationTest.runtimeClasspath
+    reports.html.destination = file("$reports.html.destination/integration")
+    reports.junitXml.destination = file("$reports.junitXml.destination/integration")
+}
+check.dependsOn integrationTest
+
+task incrementBuildVersion(group:'versioning', description:'increment build version'){
+doLast {
+		def Properties versionProps = getProperties(versionFilePath)
+		def version = (versionProps['BuildVersion'] ?: "0").toInteger() + 1
+		versionProps['BuildVersion'] = version.toString()
+		versionProps.store(file(versionFilePath).newWriter(), null)
+	}
+}
+
+build.dependsOn incrementBuildVersion
+
+task incrementMinorVersion(group:'versioning', description:'increment minor version'){
+doLast {
+		def Properties versionProps = getProperties(versionFilePath)
+		def version = (versionProps['MinorVersion'] ?: "0").toInteger() + 1
+		versionProps['MinorVersion'] = version.toString()
+		versionProps.store(file(versionFilePath).newWriter(), null)
+	}
+}
+
+task incrementMajorVersion(group:'versioning', description:'increment major version'){
+doLast {
+		def Properties versionProps = getProperties(versionFilePath)
+		def version = (versionProps['MajorVersion'] ?: "0").toInteger() + 1
+		versionProps['MajorVersion'] = version.toString()
+		versionProps['MinorVersion'] = '0'
+		versionProps.store(file(versionFilePath).newWriter(), null)
+	}
+}
