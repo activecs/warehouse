@@ -1,6 +1,7 @@
 $(function() {
 	initDataTable();
 	initValidationRules();
+	$('#datepicker').datepicker();
 
 	$("#phone").mask("?(999) 999-9999");
 
@@ -31,18 +32,19 @@ $(function() {
 });
 
 function cleanForm() {
-	$('#productForm')[0].reset();
+	$('#supplyForm')[0].reset();
 	$(':input[type=hidden]').val('');
 }
 
 function addContact() {
-	var addForm = $('#productForm');
+	var addForm = $('#supplyForm');
 	addForm.validate();
 	if (addForm.valid()) {
 		jQuery.ajax({
 			type : 'POST',
-			url : '/product',
+			url : '/supply',
 			dataType : 'json',
+			processData: false,
 			data : addForm.serialize(),
 			success : function(data) {
 				if (data.id) {
@@ -59,16 +61,14 @@ function addContact() {
 }
 
 function prepareUpdateContact(id) {
-	var product = getContact(id);
-	if (product) {
-		
-		var form = document.productForm;
-		form.id.value = product.id;
-		form.name.value = product.name;
-		form.sku.value = product.sku;
-		form.price.value = product.price;
-		form.description.value = product.description;
-		form.stockAmount.value = product.stockAmount;
+	var supplier = getContact(id);
+	if (supplier) {
+		var form = document.supplyForm;
+		form.id.value = supplier.id;
+		form.product.value = supplier.product.id;
+		form.supplier.value = supplier.supplier.id;
+		form.amount.value = supplier.amount;
+		form.datepicker.value = supplier.date;
 
 		$('#addContactModal').modal('show');
 	}
@@ -94,12 +94,12 @@ function changeToUpdate(condition) {
 }
 
 function updateContact() {
-	var addForm = $('#productForm');
+	var addForm = $('#supplyForm');
 	addForm.validate();
 	if (addForm.valid()) {
 		jQuery.ajax({
 			type : 'PUT',
-			url : '/product',
+			url : '/supply',
 			dataType : 'json',
 			data : addForm.serialize(),
 			success : function(data) {
@@ -119,7 +119,7 @@ function updateContact() {
 function deleteContact(id) {
 	jQuery.ajax({
 		type : 'DELETE',
-		url : '/product/'+id,
+		url : '/supply/'+id,
 		success : function() {
 			reloadContent();
 		},
@@ -137,7 +137,7 @@ function getContact(id) {
 			type : 'GET',
 			async: false,
 			dataType : 'json',
-			url : '/product/'+id,
+			url : '/supply/'+id,
 			success : function(data) {
 				contact = data;
 			},
@@ -163,27 +163,23 @@ function reloadContent() {
 }
 
 function initValidationRules() {
-	$('#productForm').validate({
+	$('#supplyForm').validate({
 		debug : true,
 		rules : {
 			id : {
 				required : false
 			},
-			name : {
-				required : true,
-				minlength : 3
+			product : {
+				required : true
 			},
-			sku : {
-				required : true,
-				minlength : 3
+			supplier : {
+				required : true
 			},
-			price : {
-				required : true,
-				digits: true
+			amount : {
+				required : true
 			},
-			stockAmount : {
-				required : true,
-				digits: true
+			date : {
+				required : true
 			}
 		}
 	});
@@ -192,7 +188,7 @@ function initValidationRules() {
 function initDataTable() {
 	$('#contacts').dataTable({
 		'ajax' : {
-			'url' : '/product',
+			'url' : '/supply',
 			'type' : 'GET',
 			'dataSrc' : ''
 		},
@@ -207,11 +203,10 @@ function initDataTable() {
 				return '';
 			}
 		}, 
-		{'mData' : 'name'},
-		{'mData' : 'sku'},
-		{'mData' : 'price'},
-		{'mData' : 'stockAmount'},
-		{'mData' : 'description'},
+		{'mData' : 'product.name'},
+		{'mData' : 'supplier.name'},
+		{'mData' : 'amount'},
+		{'mData' : 'date'},
 		{
 			'mData' : 'delete',
 			'sWidth' : '5%',

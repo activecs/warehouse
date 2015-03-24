@@ -30,20 +30,40 @@ $(function() {
 
 });
 
+function convertFormToJSON(form) {
+	var array = $(form).serializeArray();
+	var json = {};
+	var address = {};
+
+	$.each(array, function() {
+		if(this.name == 'country')
+			address[this.name] = this.value || '';
+		else if(this.name == 'city'){
+			address[this.name] = this.value || '';
+			json['address'] = address;
+		} else
+			json[this.name] = this.value || '';
+	});
+
+	return JSON.stringify(json);
+}
+
 function cleanForm() {
-	$('#productForm')[0].reset();
+	$('#supplierForm')[0].reset();
 	$(':input[type=hidden]').val('');
 }
 
 function addContact() {
-	var addForm = $('#productForm');
+	var addForm = $('#supplierForm');
 	addForm.validate();
 	if (addForm.valid()) {
 		jQuery.ajax({
 			type : 'POST',
-			url : '/product',
+			url : '/supplier',
 			dataType : 'json',
-			data : addForm.serialize(),
+			contentType: "application/json; charset=utf-8",
+			processData: false,
+			data : convertFormToJSON(addForm),
 			success : function(data) {
 				if (data.id) {
 					reloadContent();
@@ -59,16 +79,15 @@ function addContact() {
 }
 
 function prepareUpdateContact(id) {
-	var product = getContact(id);
-	if (product) {
-		
-		var form = document.productForm;
-		form.id.value = product.id;
-		form.name.value = product.name;
-		form.sku.value = product.sku;
-		form.price.value = product.price;
-		form.description.value = product.description;
-		form.stockAmount.value = product.stockAmount;
+	var supplier = getContact(id);
+	if (supplier) {
+		var form = document.supplierForm;
+		form.id.value = supplier.id;
+		form.code.value = supplier.code;
+		form.name.value = supplier.name;
+		form.surname.value = supplier.address.surname;
+		form.country.value = supplier.address.country;
+		form.city.value = supplier.city;
 
 		$('#addContactModal').modal('show');
 	}
@@ -94,14 +113,15 @@ function changeToUpdate(condition) {
 }
 
 function updateContact() {
-	var addForm = $('#productForm');
+	var addForm = $('#supplierForm');
 	addForm.validate();
 	if (addForm.valid()) {
 		jQuery.ajax({
 			type : 'PUT',
-			url : '/product',
+			url : '/supplier',
 			dataType : 'json',
-			data : addForm.serialize(),
+			contentType: "application/json",
+			data : convertFormToJSON(addForm),
 			success : function(data) {
 				if (data.id) {
 					reloadContent();
@@ -119,7 +139,7 @@ function updateContact() {
 function deleteContact(id) {
 	jQuery.ajax({
 		type : 'DELETE',
-		url : '/product/'+id,
+		url : '/supplier/'+id,
 		success : function() {
 			reloadContent();
 		},
@@ -137,7 +157,8 @@ function getContact(id) {
 			type : 'GET',
 			async: false,
 			dataType : 'json',
-			url : '/product/'+id,
+			contentType: "application/json",
+			url : '/supplier/'+id,
 			success : function(data) {
 				contact = data;
 			},
@@ -163,27 +184,31 @@ function reloadContent() {
 }
 
 function initValidationRules() {
-	$('#productForm').validate({
+	$('#supplierForm').validate({
 		debug : true,
 		rules : {
 			id : {
 				required : false
 			},
+			code : {
+				required : true,
+				minlength : 3
+			},
 			name : {
 				required : true,
 				minlength : 3
 			},
-			sku : {
+			surname : {
 				required : true,
 				minlength : 3
 			},
-			price : {
+			country : {
 				required : true,
-				digits: true
+				minlength : 3
 			},
-			stockAmount : {
+			city : {
 				required : true,
-				digits: true
+				minlength : 3
 			}
 		}
 	});
@@ -192,7 +217,7 @@ function initValidationRules() {
 function initDataTable() {
 	$('#contacts').dataTable({
 		'ajax' : {
-			'url' : '/product',
+			'url' : '/supplier',
 			'type' : 'GET',
 			'dataSrc' : ''
 		},
@@ -207,11 +232,11 @@ function initDataTable() {
 				return '';
 			}
 		}, 
+		{'mData' : 'code'},
 		{'mData' : 'name'},
-		{'mData' : 'sku'},
-		{'mData' : 'price'},
-		{'mData' : 'stockAmount'},
-		{'mData' : 'description'},
+		{'mData' : 'surname'},
+		{'mData' : 'address.country'},
+		{'mData' : 'address.city'},
 		{
 			'mData' : 'delete',
 			'sWidth' : '5%',

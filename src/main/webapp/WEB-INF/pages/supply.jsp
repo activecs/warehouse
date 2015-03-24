@@ -5,10 +5,12 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="//cdn.datatables.net/plug-ins/3cfcc339e89/integration/bootstrap/3/dataTables.bootstrap.css">
     <link rel="stylesheet" type="text/css" href="<c:url value="/resources/css/style.css" />">
+    <link rel="stylesheet" type="text/css" href="<c:url value="/resources/css/datepicker.css" />">
+    
 </head>
 <body>
     <div align="center" style="background-color: #684D91; height: 100px; vertical-align: middle;">
-        <h1 style="display: inline-block; color: white"><a href="/">Product</a></h1>
+        <h1 style="display: inline-block; color: white"><a href="/">Supply</a></h1>
     </div>
     <nav class="navbar navbar-default">
        <ul class="nav navbar-nav navbar-left">
@@ -23,18 +25,17 @@
       </ul>
     </nav>
     <div align="center" style="margin-top: 10px">
-        <button id="addCnt" type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#addContactModal">Add Product</button>
+        <button id="addCnt" type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#addContactModal">Add Supply</button>
     </div>
     <div style="padding: 1%">
         <table id="contacts" class="table table-striped table-bordered dataTable no-footer">
             <thead>
                 <tr>
                     <th>Index</th>
-                    <th>Product Name</th>
-                    <th>SKU</th>
-                    <th>Price</th>
-                    <th>Stock amount</th>
-                    <th>Description</th>
+                    <th>Product</th>
+                    <th>Supplier</th>
+                    <th>Amount</th>
+                    <th>Date</th>
                     <th>&nbsp;</th>
                 </tr>
             </thead>
@@ -48,31 +49,35 @@
             <div class="modal-content">
               <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                <h4 class="modal-title" id="addContactModalLabel">Add Product</h4>
-                <h4 class="modal-title" style="display: none;" id="updateContactModalLabel">Update Product</h4>
+                <h4 class="modal-title" id="addContactModalLabel">Add Supply</h4>
+                <h4 class="modal-title" style="display: none;" id="updateContactModalLabel">Update Supply</h4>
               </div>
               <div class="modal-body">
-                <form role="form" name="productForm" id="productForm">
+                 <form role="form" name="supplyForm" id="supplyForm">
                     <input type="hidden" name="id" id="id"/>
                   <div class="form-group">
-                    <label for="name">Product Name</label>
-                    <input type="text" name="name" class="form-control" id="name" placeholder="Enter Product Name">
+                    <label for="product">Product</label>
+                    <select name="product" class="form-control" id="product">
+                        <c:forEach items="${products}" var="product">
+                            <option value="${product.id}">${product.name}</option>
+                        </c:forEach>
+                    </select>
                   </div>
                   <div class="form-group">
-                    <label for="sku">SKU</label>
-                    <input type="text" name="SKU" class="form-control" id="sku" placeholder="Enter Product SKU">
+                    <label for="supplier">Supplier</label>
+                    <select name="supplier" class="form-control" id="supplier">
+                        <c:forEach items="${suppliers}" var="supplier">
+                            <option value="${supplier.id}">${supplier.name}</option>
+                        </c:forEach>
+                    </select>
                   </div>
                   <div class="form-group">
-                    <label for="price">Price</label>
-                    <input type="text" name="price" class="form-control" id="price" placeholder="Enter Product Price">
+                    <label for="amount">Amount</label>
+                    <input type="text" name="amount" class="form-control" id="amount" placeholder="Enter Product Amount">
                   </div>
                   <div class="form-group">
-                    <label for="description">Description</label>
-                    <input type="text" name="description" class="form-control" id="description" placeholder="Enter Product Description">
-                  </div>
-                  <div class="form-group">
-                    <label for="description">Stock Amount</label>
-                    <input type="text" name="stockAmount" class="form-control" id="stockAmount" placeholder="Enter Product Stock">
+                    <label for="date">Date</label>
+                    <input type="text" name="date" class="form-control" data-date-format="dd-mm-yyyy" id="datepicker" placeholder="Enter Date">
                   </div>
                 </form>
               </div>
@@ -85,13 +90,13 @@
         </div>
     </div>
     
-    
     <script type="text/javascript" src="<c:url value='/resources/js/jquery-1.10.2.js'/>"></script>
     <script type="text/javascript" src="<c:url value='/resources/js/jquery.dataTables.js'/>"></script>
     <script type="text/javascript" src="<c:url value='/resources/js/dataTables.bootstrap.js'/>"></script>
     <script type="text/javascript" src="<c:url value='/resources/js/bootstrap.min.js'/>"></script>
     <script type="text/javascript" src="<c:url value='/resources/js/jquery.validate.js'/>"></script>
-    <script type="text/javascript" src="<c:url value='/resources/js/product.js'/>"></script>
+    <script type="text/javascript" src="<c:url value='/resources/js/datepicker.js'/>"></script>
+    <script type="text/javascript" src="<c:url value='/resources/js/supply.js'/>"></script>
     <script type="text/javascript" src="<c:url value='/resources/js/jquery.maskedinput.js'/>"></script>
 </body>
 </html>

@@ -8,7 +8,7 @@
 </head>
 <body>
     <div align="center" style="background-color: #684D91; height: 100px; vertical-align: middle;">
-        <h1 style="display: inline-block; color: white"><a href="/">Product</a></h1>
+        <h1 style="display: inline-block; color: white"><a href="/">Supplier</a></h1>
     </div>
     <nav class="navbar navbar-default">
        <ul class="nav navbar-nav navbar-left">
@@ -23,18 +23,18 @@
       </ul>
     </nav>
     <div align="center" style="margin-top: 10px">
-        <button id="addCnt" type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#addContactModal">Add Product</button>
+        <button id="addCnt" type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#addContactModal">Add Supplier</button>
     </div>
     <div style="padding: 1%">
         <table id="contacts" class="table table-striped table-bordered dataTable no-footer">
             <thead>
                 <tr>
                     <th>Index</th>
-                    <th>Product Name</th>
-                    <th>SKU</th>
-                    <th>Price</th>
-                    <th>Stock amount</th>
-                    <th>Description</th>
+                    <th>Code</th>
+                    <th>Name</th>
+                    <th>Surname</th>
+                    <th>Country</th>
+                    <th>City</th>
                     <th>&nbsp;</th>
                 </tr>
             </thead>
@@ -48,31 +48,31 @@
             <div class="modal-content">
               <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                <h4 class="modal-title" id="addContactModalLabel">Add Product</h4>
-                <h4 class="modal-title" style="display: none;" id="updateContactModalLabel">Update Product</h4>
+                <h4 class="modal-title" id="addContactModalLabel">Add Supplier</h4>
+                <h4 class="modal-title" style="display: none;" id="updateContactModalLabel">Update Supplier</h4>
               </div>
               <div class="modal-body">
-                <form role="form" name="productForm" id="productForm">
+                <form role="form" name="supplierForm" id="supplierForm">
                     <input type="hidden" name="id" id="id"/>
                   <div class="form-group">
-                    <label for="name">Product Name</label>
-                    <input type="text" name="name" class="form-control" id="name" placeholder="Enter Product Name">
+                    <label for="code">Code</label>
+                    <input type="text" name="code" class="form-control" id="code" placeholder="Enter Supplier Code">
                   </div>
                   <div class="form-group">
-                    <label for="sku">SKU</label>
-                    <input type="text" name="SKU" class="form-control" id="sku" placeholder="Enter Product SKU">
+                    <label for="name">Name</label>
+                    <input type="text" name="name" class="form-control" id="name" placeholder="Enter Supplier name">
                   </div>
                   <div class="form-group">
-                    <label for="price">Price</label>
-                    <input type="text" name="price" class="form-control" id="price" placeholder="Enter Product Price">
+                    <label for="surname">Surname</label>
+                    <input type="text" name="surname" class="form-control" id="surname" placeholder="Enter Supplier Surname">
                   </div>
                   <div class="form-group">
-                    <label for="description">Description</label>
-                    <input type="text" name="description" class="form-control" id="description" placeholder="Enter Product Description">
+                    <label for="country">Country</label>
+                    <input type="text" name="country" class="form-control" id="country" placeholder="Enter Supplier Country">
                   </div>
                   <div class="form-group">
-                    <label for="description">Stock Amount</label>
-                    <input type="text" name="stockAmount" class="form-control" id="stockAmount" placeholder="Enter Product Stock">
+                    <label for="city">City</label>
+                    <input type="text" name="city" class="form-control" id="city" placeholder="Enter Supplier City">
                   </div>
                 </form>
               </div>
@@ -85,13 +85,12 @@
         </div>
     </div>
     
-    
     <script type="text/javascript" src="<c:url value='/resources/js/jquery-1.10.2.js'/>"></script>
     <script type="text/javascript" src="<c:url value='/resources/js/jquery.dataTables.js'/>"></script>
     <script type="text/javascript" src="<c:url value='/resources/js/dataTables.bootstrap.js'/>"></script>
     <script type="text/javascript" src="<c:url value='/resources/js/bootstrap.min.js'/>"></script>
     <script type="text/javascript" src="<c:url value='/resources/js/jquery.validate.js'/>"></script>
-    <script type="text/javascript" src="<c:url value='/resources/js/product.js'/>"></script>
+    <script type="text/javascript" src="<c:url value='/resources/js/supplier.js'/>"></script>
     <script type="text/javascript" src="<c:url value='/resources/js/jquery.maskedinput.js'/>"></script>
 </body>
 </html>
