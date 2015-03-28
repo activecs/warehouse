@@ -17,37 +17,6 @@ USE `examination`;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
---
--- Table structure for table `contacts`
---
-
-DROP TABLE IF EXISTS `contacts`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `contacts` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `adress` varchar(255) NOT NULL,
-  `firstName` varchar(15) NOT NULL,
-  `lastName` varchar(25) NOT NULL,
-  `phone` varchar(255) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `contacts`
---
-
-LOCK TABLES `contacts` WRITE;
-/*!40000 ALTER TABLE `contacts` DISABLE KEYS */;
-INSERT INTO `contacts` VALUES (1,'mail@mail.com','name','name','(380) 930-2384');
-/*!40000 ALTER TABLE `contacts` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `product`
---
-
 DROP TABLE IF EXISTS `product`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
@@ -73,61 +42,6 @@ INSERT INTO `product` VALUES (2,'345','341','dfgdf',435.00,345);
 /*!40000 ALTER TABLE `product` ENABLE KEYS */;
 UNLOCK TABLES;
 
---
--- Table structure for table `product_supplier`
---
-
-DROP TABLE IF EXISTS `product_supplier`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `product_supplier` (
-  `product_id` int(11) NOT NULL,
-  `supplies_id` int(11) NOT NULL,
-  PRIMARY KEY (`product_id`,`supplies_id`),
-  UNIQUE KEY `UK_gmapgakdp2gy90raiycj2yo6i` (`supplies_id`),
-  CONSTRAINT `FK_bnkuil9rwwxplj5yrv3h5by80` FOREIGN KEY (`product_id`) REFERENCES `product` (`id`),
-  CONSTRAINT `FK_gmapgakdp2gy90raiycj2yo6i` FOREIGN KEY (`supplies_id`) REFERENCES `supplier` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `product_supplier`
---
-
-LOCK TABLES `product_supplier` WRITE;
-/*!40000 ALTER TABLE `product_supplier` DISABLE KEYS */;
-/*!40000 ALTER TABLE `product_supplier` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `product_supply`
---
-
-DROP TABLE IF EXISTS `product_supply`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `product_supply` (
-  `product_id` int(11) NOT NULL,
-  `supplies_id` int(11) NOT NULL,
-  PRIMARY KEY (`product_id`,`supplies_id`),
-  UNIQUE KEY `UK_hh8o33hh9xr7f2nvmcxr5o4oe` (`supplies_id`),
-  CONSTRAINT `FK_hh8o33hh9xr7f2nvmcxr5o4oe` FOREIGN KEY (`supplies_id`) REFERENCES `supply` (`id`),
-  CONSTRAINT `FK_lw6dykjpi61r90hcsylyb76an` FOREIGN KEY (`product_id`) REFERENCES `product` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `product_supply`
---
-
-LOCK TABLES `product_supply` WRITE;
-/*!40000 ALTER TABLE `product_supply` DISABLE KEYS */;
-/*!40000 ALTER TABLE `product_supply` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `supplier`
---
 
 DROP TABLE IF EXISTS `supplier`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;

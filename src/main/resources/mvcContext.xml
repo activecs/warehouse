@@ -14,7 +14,7 @@
 
 	<context:component-scan base-package="com.kharkiv.warehouse.controller" />
 	<mvc:resources location="/resources/" mapping="/resources/**/*" />
-	<mvc:view-controller path="/" view-name="contact" />
+	<mvc:view-controller path="/" view-name="product" />
 
 	<mvc:annotation-driven>
 		<mvc:message-converters>
